@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ErgoSmart Chair Web Simulation</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        ergo: { white: '#ffffff', lightBlue: '#bae6fd', blue: '#0ea5e9', darkBlue: '#0284c7', green: '#10b981', yellow: '#f59e0b', orange: '#f97316', red: '#ef4444', darkBg: '#0b1120' }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="bg-ergo-darkBg bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-slate-800 via-ergo-darkBg to-black min-h-screen text-slate-300 font-sans selection:bg-ergo-blue selection:text-white overflow-x-hidden">
+
+    <div id="landing-page" class="absolute inset-0 z-[100] min-h-screen flex flex-col items-center justify-center p-6 transition-opacity duration-1000 bg-ergo-darkBg/95 backdrop-blur-md">
+        
+        <div class="max-w-5xl w-full text-center space-y-6">
+            <div class="inline-block bg-slate-800/50 p-4 rounded-full border border-slate-700 shadow-[0_0_30px_rgba(14,165,233,0.3)] mb-2">
+                <i class="fa-solid fa-chair text-5xl text-ergo-blue neon-glow"></i>
+            </div>
+            
+            <h1 class="text-4xl md:text-5xl font-bold text-white neon-glow tracking-wider">ErgoSmart Chair System</h1>
+            
+            <div class="glass-panel p-6 rounded-2xl text-sm md:text-base leading-relaxed text-slate-300 max-w-3xl mx-auto shadow-lg border-l-4 border-ergo-blue text-left md:text-center">
+                <strong class="text-white">Tujuan Proyek:</strong> Inovasi kursi ergonomis cerdas berbasis <em>Internet of Things</em> (IoT) dengan pendekatan <em>Human-Centered Design</em> (HCD). Sistem ini dirancang untuk menekan angka gangguan muskuloskeletal (nyeri punggung bawah) pada pekerja kantoran melalui deteksi postur *real-time* dan intervensi ergonomi yang adaptif.
+            </div>
+
+            <div class="mt-12 text-left">
+                <h3 class="text-lg font-bold text-white mb-6 text-center"><i class="fa-solid fa-network-wired text-ergo-blue mr-2"></i>Siklus Arsitektur Perangkat Keras (IoT)</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 relative">
+                    <div class="hidden md:block absolute top-1/2 left-0 w-full h-1 bg-slate-700 -z-10 transform -translate-y-1/2"></div>
+
+                    <div id="step-fsr" class="glass-card p-5 border-t-4 border-slate-600 transition-all duration-300 bg-slate-900/80">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-[10px] bg-slate-800 border border-slate-600 font-bold px-2 py-1 rounded text-slate-300">STEP 1</span>
+                            <span id="badge-fsr" class="text-[10px] font-bold text-slate-500">Offline</span>
+                        </div>
+                        <h5 class="text-sm font-bold text-white">16x Sensor FSR</h5>
+                        <p class="text-xs text-slate-400 mt-2">Mendeteksi tekanan duduk pada bantalan kursi.</p>
+                    </div>
+
+                    <div id="step-mux" class="glass-card p-5 border-t-4 border-slate-600 transition-all duration-300 bg-slate-900/80">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-[10px] bg-slate-800 border border-slate-600 font-bold px-2 py-1 rounded text-slate-300">STEP 2</span>
+                            <span id="badge-mux" class="text-[10px] font-bold text-slate-500">Offline</span>
+                        </div>
+                        <h5 class="text-sm font-bold text-white">Multiplexer MUX</h5>
+                        <p class="text-xs text-slate-400 mt-2">Merangkum 16 sinyal analog menjadi 1 jalur.</p>
+                    </div>
+
+                    <div id="step-esp" class="glass-card p-5 border-t-4 border-slate-600 transition-all duration-300 bg-slate-900/80">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-[10px] bg-slate-800 border border-slate-600 font-bold px-2 py-1 rounded text-slate-300">STEP 3</span>
+                            <span id="badge-esp" class="text-[10px] font-bold text-slate-500">Offline</span>
+                        </div>
+                        <h5 class="text-sm font-bold text-white">ESP32 DevKit</h5>
+                        <p class="text-xs text-slate-400 mt-2">Komputasi algoritma postur dan modul Wi-Fi.</p>
+                    </div>
+
+                    <div id="step-cloud" class="glass-card p-5 border-t-4 border-slate-600 transition-all duration-300 bg-slate-900/80">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-[10px] bg-slate-800 border border-slate-600 font-bold px-2 py-1 rounded text-slate-300">STEP 4</span>
+                            <span id="badge-cloud" class="text-[10px] font-bold text-slate-500">Offline</span>
+                        </div>
+                        <h5 class="text-sm font-bold text-white">Firebase Cloud</h5>
+                        <p class="text-xs text-slate-400 mt-2">Database nirkabel penembus sinkronisasi aplikasi.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-8">
+                <button id="btn-trigger-hardware" class="mx-auto bg-ergo-blue hover:bg-blue-500 text-white font-bold py-4 px-8 rounded-2xl transition-all shadow-[0_0_20px_rgba(14,165,233,0.5)] text-sm flex items-center justify-center gap-3 border border-blue-400/50 hover:scale-105">
+                    <i class="fa-solid fa-power-off text-lg"></i> Initialize IoT Connection
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="main-dashboard" class="hidden opacity-0 container mx-auto px-4 py-8 lg:h-screen lg:flex lg:flex-col lg:justify-center relative z-10 transition-opacity duration-1000">
+        
+        <div class="text-center mb-4">
+            <h1 class="text-3xl font-bold text-white neon-glow tracking-wide"><i class="fa-solid fa-chair mr-2 text-ergo-blue"></i>ErgoSmart Dashboard</h1>
+        </div>
+
+        <div class="flex flex-col lg:flex-row gap-8 items-center lg:items-start justify-center max-w-7xl mx-auto w-full">
+            
+            <div class="w-full lg:w-1/2 flex flex-col gap-6">
+                
+                <div class="glass-panel rounded-2xl p-6">
+                    <h2 class="text-xl font-bold text-white border-b border-slate-700 pb-3 mb-4 flex justify-between items-center">
+                        <span>Live 3D Monitor</span>
+                        <span id="3d-status-badge" class="text-[10px] bg-slate-800 border border-slate-600 text-slate-400 px-2 py-1 rounded-full uppercase tracking-wider shadow-[0_0_10px_rgba(255,255,255,0.05)]">Standby</span>
+                    </h2>
+                    
+                    <div class="flex justify-center relative w-full">
+                        <div id="chair-3d-container" class="w-full h-[320px] rounded-2xl overflow-hidden shadow-inner bg-gradient-to-b from-slate-800 to-slate-900 border border-slate-700 cursor-grab active:cursor-grabbing relative transition-colors duration-500">
+                            <div id="loading-3d" class="absolute inset-0 flex flex-col items-center justify-center text-ergo-blue z-10">
+                                <i class="fa-solid fa-chair text-4xl mb-2 animate-bounce drop-shadow-[0_0_15px_rgba(14,165,233,0.5)]"></i>
+                                <span class="text-xs font-bold uppercase tracking-widest mt-2">Loading 3D Model...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="glass-panel rounded-2xl p-5">
+                        <h2 class="text-sm font-bold text-white mb-3"><i class="fa-solid fa-ruler-combined mr-2 text-ergo-blue neon-glow"></i>Ergonomic Profile</h2>
+                        <select id="anthro-select" class="w-full bg-slate-800 border border-slate-600 text-white text-xs rounded-lg focus:ring-ergo-blue focus:border-ergo-blue block p-2 mb-3 shadow-inner outline-none">
+                            <option value="5">Persentil 5th (Petite / Kecil)</option>
+                            <option value="50" selected>Persentil 50th (Rata-rata)</option>
+                            <option value="95">Persentil 95th (Tinggi / Besar)</option>
+                        </select>
+                        <div class="space-y-2 text-xs">
+                            <div class="flex justify-between border-b border-slate-700 pb-1">
+                                <span class="text-slate-400">Tinggi Popliteal</span><span id="anthro-popliteal" class="font-bold text-white">41 cm</span>
+                            </div>
+                            <div class="flex justify-between border-b border-slate-700 pb-1">
+                                <span class="text-slate-400">Kedalaman</span><span id="anthro-depth" class="font-bold text-white">42 cm</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">Lebar Pinggul</span><span id="anthro-width" class="font-bold text-white">38 cm</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel rounded-2xl p-5 relative">
+                        <h2 class="text-sm font-bold text-white mb-3"><i class="fa-solid fa-gamepad mr-2 text-ergo-orange neon-glow"></i>Sensor Triggers</h2>
+                        <div class="grid grid-cols-2 gap-2 relative z-10" id="control-panel">
+                            <button data-posture="ideal" class="sim-btn group text-[9px] py-1.5"><i class="fa-solid fa-check-circle text-ergo-green mb-1 text-sm"></i> Ideal</button>
+                            <button data-posture="forward" class="sim-btn group text-[9px] py-1.5"><i class="fa-solid fa-person-falling text-ergo-orange mb-1 text-sm"></i> Forward</button>
+                            <button data-posture="left" class="sim-btn group text-[9px] py-1.5"><i class="fa-solid fa-arrow-rotate-left text-ergo-yellow mb-1 text-sm"></i> L-Left</button>
+                            <button data-posture="right" class="sim-btn group text-[9px] py-1.5"><i class="fa-solid fa-arrow-rotate-right text-ergo-yellow mb-1 text-sm"></i> L-Right</button>
+                            <button data-posture="back" class="sim-btn group text-[9px] py-1.5"><i class="fa-solid fa-person-praying text-ergo-orange mb-1 text-sm"></i> Back</button>
+                            <button data-posture="empty" class="sim-btn active group text-[9px] py-1.5"><i class="fa-solid fa-ban text-slate-500 mb-1 text-sm"></i> Empty</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full lg:w-[350px] flex justify-center relative z-50">
+                <div class="w-full max-w-[350px] h-[720px] max-h-[85vh] rounded-[40px] border-[10px] border-slate-800 bg-slate-900 shadow-[0_0_50px_rgba(14,165,233,0.15)] relative flex flex-col overflow-hidden">
+                    
+                    <div class="absolute top-0 inset-x-0 h-5 flex justify-center z-50"><div class="w-28 h-5 bg-slate-800 rounded-b-2xl"></div></div>
+
+                    <div class="bg-slate-950/80 backdrop-blur-md text-white pt-8 pb-3 px-5 rounded-b-2xl border-b border-slate-800 shadow-md z-10 relative flex-shrink-0">
+                        <div class="flex justify-between items-center">
+                            <h3 class="font-bold text-base"><i class="fa-solid fa-leaf mr-1.5 text-ergo-green neon-glow"></i>ErgoSmart</h3>
+                            <div class="text-[10px] font-semibold px-2 py-1 bg-white/5 rounded-full flex items-center border border-white/10">
+                                <span id="hardware-status-dot" class="w-1.5 h-1.5 rounded-full bg-ergo-green animate-pulse mr-1.5 shadow-[0_0_5px_#10b981]"></span> 
+                                <span id="hardware-status-text" class="text-white">Connected</span>
+                            </div>
+                        </div>
+                        <div class="text-center mt-3">
+                            <p id="realtime-clock" class="text-2xl font-light tracking-wider text-white neon-glow">00:00:00</p>
+                            <p id="session-status-text" class="text-[10px] text-ergo-blue uppercase tracking-widest mt-1">Session Active</p>
+                        </div>
+                    </div>
+
+                    <div class="flex-1 overflow-y-auto p-4 hide-scrollbar space-y-4">
+                        
+                        <div class="glass-card p-3 relative">
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="text-xs font-bold text-white flex items-center"><i class="fa-solid fa-fire mr-2 text-ergo-orange"></i>FSR Matrix Grid</h4>
+                            </div>
+                            <div class="relative w-full max-w-[200px] mx-auto">
+                                <div id="heatmap-grid" class="grid grid-cols-4 gap-1 aspect-square bg-slate-900/50 border border-slate-700/50 p-2 rounded-xl relative z-10 shadow-inner"></div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="glass-card p-3 flex flex-col justify-center items-center text-center">
+                                <div id="status-icon" class="text-2xl mb-1 text-slate-500"><i class="fa-solid fa-spinner fa-spin"></i></div>
+                                <h5 id="status-title" class="font-bold text-xs text-white">Syncing...</h5>
+                                <p id="status-desc" class="text-[9px] text-slate-400 mt-1 leading-tight">Membaca data.</p>
+                            </div>
+                            <div class="glass-card p-3 flex flex-col justify-center items-center relative overflow-hidden">
+                                <svg class="w-16 h-16 transform -rotate-90">
+                                    <circle cx="32" cy="32" r="28" fill="transparent" stroke="#334155" stroke-width="5" />
+                                    <circle id="score-circle" cx="32" cy="32" r="28" fill="transparent" stroke="#10B981" stroke-width="5" stroke-dasharray="176" stroke-dashoffset="176" class="transition-all duration-1000 ease-out drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                                </svg>
+                                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                    <span id="score-text" class="text-lg font-bold text-white">0</span>
+                                    <span class="text-[8px] font-bold text-slate-400 uppercase">Score</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass-card p-3 space-y-2">
+                            <h4 class="text-xs font-bold text-white flex items-center"><i class="fa-solid fa-graduation-cap mr-2 text-ergo-blue"></i>Posture Guide</h4>
+                            <div class="bg-slate-900/60 p-2 rounded-xl border border-slate-700">
+                                <p class="text-[9px] text-slate-400 uppercase font-bold tracking-wider">Active Sensor</p>
+                                <p id="sensor-location-text" class="text-[10px] font-bold text-slate-300 mt-0.5">Memuat...</p>
+                            </div>
+                            <div class="p-2.5 rounded-xl flex items-start gap-2 transition-colors duration-300 bg-slate-800 text-slate-400 border border-slate-700" id="guide-box">
+                                <div class="text-base mt-0.5" id="guide-icon"><i class="fa-solid fa-sync fa-spin"></i></div>
+                                <div class="flex-1">
+                                    <p class="text-[11px] font-bold text-white" id="guide-title">Menghitung</p>
+                                    <p class="text-[10px] mt-0.5 leading-relaxed" id="guide-instruction">Menunggu instruksi postur.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass-card p-3">
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="text-xs font-bold text-white"><i class="fa-solid fa-calendar-check mr-2 text-ergo-green neon-glow"></i>Weekly Report</h4>
+                                <select id="day-selector" class="bg-slate-800 text-[9px] text-white py-1 px-2 rounded border border-slate-600 outline-none">
+                                    <option value="0">Senin</option>
+                                    <option value="1">Selasa</option>
+                                    <option value="2">Rabu</option>
+                                    <option value="3">Kamis</option>
+                                    <option value="4">Jumat</option>
+                                    <option value="5">Sabtu</option>
+                                    <option value="6">Minggu</option>
+                                </select>
+                            </div>
+                            <div class="grid grid-cols-7 gap-1" id="weekly-grid"></div>
+                            <button id="btn-disconnect" class="w-full mt-3 bg-red-900/30 hover:bg-red-900/60 text-red-400 border border-red-500/50 font-bold py-2 px-3 rounded-xl transition-all shadow-[0_0_10px_rgba(239,68,68,0.2)] text-[10px] flex justify-center items-center gap-2">
+                                <i class="fa-solid fa-power-off"></i> End Session & Save Data
+                            </button>
+                        </div>
+
+                        <div class="glass-card p-3">
+                            <h4 class="text-xs font-bold text-white mb-2"><i class="fa-solid fa-chart-line mr-2 text-ergo-blue"></i>Trend Analysis</h4>
+                            <div class="relative h-24 w-full"><canvas id="postureChart"></canvas></div>
+                        </div>
+
+                        <div class="glass-card p-3 mb-2">
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="text-xs font-bold text-white"><i class="fa-solid fa-list mr-2 text-slate-400"></i>Activity Log</h4>
+                                <button id="btn-export" class="text-[9px] bg-slate-800 border border-slate-600 text-slate-300 px-2 py-1 rounded hover:bg-slate-700 hover:text-white transition-colors flex items-center shadow-[0_0_8px_rgba(255,255,255,0.05)]"><i class="fa-solid fa-download mr-1"></i> Export PDF</button>
+                            </div>
+                            <div id="activity-log" class="space-y-2 h-24 overflow-y-auto pr-2 custom-scrollbar"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="warning-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-[200] hidden items-center justify-center opacity-0 transition-opacity duration-300">
+        <div class="glass-panel rounded-2xl p-6 max-w-sm w-[90%] shadow-[0_0_30px_rgba(239,68,68,0.3)] transform scale-95 transition-transform duration-300 pop-animation text-center border-t-4 border-ergo-red">
+            <div class="w-16 h-16 bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-500/30"><i class="fa-solid fa-triangle-exclamation text-3xl text-ergo-red animate-pulse neon-glow"></i></div>
+            <h3 class="text-xl font-bold text-white mb-2">Warning!</h3>
+            <p class="text-slate-300 mb-6 text-sm">Posisi Anda membahayakan tulang belakang. Harap segera sesuaikan postur Anda!</p>
+            <button id="close-modal-btn" class="w-full bg-ergo-red hover:bg-red-600 text-white font-bold py-3 px-4 rounded-xl transition-colors shadow-[0_0_15px_rgba(239,68,68,0.4)]">I Will Adjust</button>
+        </div>
+    </div>
+
+    <div id="toast-export" class="fixed bottom-5 right-5 bg-slate-800 border border-ergo-green text-white px-4 py-3 rounded-xl shadow-[0_0_20px_rgba(16,185,129,0.3)] transform translate-y-20 opacity-0 transition-all duration-300 z-[150] flex items-center pointer-events-none">
+        <i class="fa-solid fa-file-pdf text-xl mr-3 text-ergo-green neon-glow"></i><div><h4 class="font-bold text-sm">Export Success</h4><p class="text-[10px] text-slate-300">ErgoSmart_Report.pdf downloaded.</p></div>
+    </div>
+
+    <div id="toast-save" class="fixed bottom-24 right-5 bg-slate-800 border border-ergo-blue text-white px-4 py-3 rounded-xl shadow-[0_0_20px_rgba(14,165,233,0.3)] transform translate-y-20 opacity-0 transition-all duration-300 z-[150] flex items-center pointer-events-none">
+        <i class="fa-solid fa-floppy-disk text-xl mr-3 text-ergo-blue neon-glow"></i><div><h4 class="font-bold text-sm">Session Saved</h4><p class="text-[10px] text-slate-300">Data harian berhasil disimpan.</p></div>
+    </div>
+
+    <script type="importmap">{"imports": {"three": "https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"}}</script>
+    <script type="module" src="assets/js/three-setup.js"></script>
+    <script src="assets/js/charts.js"></script>
+    <script src="assets/js/app.js"></script>
+</body>
+</html>
