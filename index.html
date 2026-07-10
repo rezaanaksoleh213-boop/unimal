@@ -88,14 +88,21 @@
                     <div class="w-full md:w-1/2 h-[350px] md:h-[420px] rounded-2xl overflow-hidden bg-gradient-to-br from-slate-900 to-black border border-slate-700/60 relative group shadow-inner">
                         <div id="showcase-3d-container" class="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing"></div>
                         
-                        <div id="annotation-overlay" class="absolute pointer-events-none opacity-0 z-30 hotspot-label" style="top: -100px; left: -100px; transform: translate(0, -50%);">
+                        <div id="annot-overlay-0" class="absolute pointer-events-none opacity-0 z-30 hotspot-label" style="top: -100px; left: -100px; transform: translate(0, -50%);">
                             <div class="relative flex items-center">
-                                <div id="annot-dot-glow" class="w-4 h-4 rounded-full bg-ergo-blue opacity-50 animate-ping absolute -left-2"></div>
+                                <div class="annot-dot-glow w-4 h-4 rounded-full bg-ergo-blue opacity-50 animate-ping absolute -left-2"></div>
                                 <div class="w-2 h-2 rounded-full bg-white absolute -left-1 z-10 shadow-[0_0_5px_#fff]"></div>
-                                <div id="annot-line" class="w-10 md:w-16 h-[2px] bg-gradient-to-r from-ergo-blue to-transparent ml-1"></div>
-                                <div id="annot-text" class="absolute left-10 md:left-16 bg-slate-900/90 backdrop-blur border border-ergo-blue text-white text-[10px] md:text-xs font-bold px-3 py-1.5 rounded-lg shadow-[0_0_20px_rgba(0,0,0,0.8)] whitespace-nowrap">
-                                    Label Komponen
-                                </div>
+                                <div class="annot-line w-10 md:w-16 h-[2px] bg-gradient-to-r from-ergo-blue to-transparent ml-1"></div>
+                                <div class="annot-text absolute left-10 md:left-16 bg-slate-900/90 backdrop-blur border border-ergo-blue text-white text-[10px] md:text-xs font-bold px-3 py-1.5 rounded-lg shadow-[0_0_20px_rgba(0,0,0,0.8)] whitespace-nowrap">Label 1</div>
+                            </div>
+                        </div>
+
+                        <div id="annot-overlay-1" class="absolute pointer-events-none opacity-0 z-30 hotspot-label" style="top: -100px; left: -100px; transform: translate(0, -50%);">
+                            <div class="relative flex items-center">
+                                <div class="annot-dot-glow w-4 h-4 rounded-full bg-ergo-blue opacity-50 animate-ping absolute -left-2"></div>
+                                <div class="w-2 h-2 rounded-full bg-white absolute -left-1 z-10 shadow-[0_0_5px_#fff]"></div>
+                                <div class="annot-line w-10 md:w-16 h-[2px] bg-gradient-to-r from-ergo-blue to-transparent ml-1"></div>
+                                <div class="annot-text absolute left-10 md:left-16 bg-slate-900/90 backdrop-blur border border-ergo-blue text-white text-[10px] md:text-xs font-bold px-3 py-1.5 rounded-lg shadow-[0_0_20px_rgba(0,0,0,0.8)] whitespace-nowrap">Label 2</div>
                             </div>
                         </div>
 
@@ -170,13 +177,11 @@
 
     <div id="intro-scene" class="fixed inset-0 z-[150] bg-black hidden flex-col items-center justify-center opacity-0 transition-opacity duration-1000">
         <div id="intro-3d-container" class="absolute inset-0 w-full h-full"></div>
-        
         <div id="intro-text" class="absolute top-1/4 text-center z-10 transition-opacity duration-1000">
             <h2 class="text-2xl md:text-4xl font-bold text-ergo-blue neon-glow tracking-[0.3em] uppercase">Materializing Data</h2>
             <p class="text-slate-400 mt-3 text-sm md:text-base tracking-widest">Constructing Digital Twin...</p>
             <div id="intro-progress" class="text-ergo-green font-mono text-2xl mt-4 font-bold tracking-widest opacity-0 transition-opacity duration-500 neon-glow">0%</div>
         </div>
-        
         <button id="btn-continue-dashboard" class="absolute bottom-12 right-12 bg-ergo-blue hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-[0_0_20px_rgba(14,165,233,0.5)] text-sm flex items-center justify-center gap-3 border border-blue-400/50 hover:scale-105 opacity-0 pointer-events-none duration-700 z-20">
             Masuk ke Dashboard <i class="fa-solid fa-arrow-right"></i>
         </button>
@@ -429,8 +434,8 @@
                     desc: "Sasis utama kursi struktural yang sangat tegap untuk menahan kapasitas beban kerja dinamis hingga 150 kg secara aman. Berbobot ringan kelas aviasi serta dilapisi proteksi anti-karat korosi."
                 },
                 {
-                    title: "Gas Lift & Synchro Tilt",
-                    desc: "Silinder penyesuai tinggi dudukan (38-54 cm) untuk menjaga kaki menapak lantai, dipadukan engsel pintar penyinkron sandaran punggung (15°-20°) guna mengurangi beban kompresi panggul."
+                    title: "Synchro Tilt & Gas Lift",
+                    desc: "Silinder hidrolik (38-54 cm) untuk menjaga kaki menapak sejajar dengan lantai, dipadukan mekanisme engsel pintar (15°-20°) guna mengurangi beban kompresi pada panggul."
                 }
             ],
             material: [
@@ -517,12 +522,9 @@
 
             if(titleEl) titleEl.innerText = activeData.title;
             if(descEl) descEl.innerText = activeData.desc;
-            
-            if(counterEl) {
-                counterEl.innerText = slideIndex + 1;
-            }
+            if(counterEl) counterEl.innerText = slideIndex + 1;
 
-            // PANGGIL KAMERA 3D & UPDATE HOTSPOT ANOTASI
+            // PANGGIL KAMERA 3D (Terhubung ke three-setup.js)
             if (window.updateShowcaseCamera) {
                 window.updateShowcaseCamera(tabId, slideIndex);
             }
