@@ -359,16 +359,10 @@ window.playIntro3D = function() {
 };
 
 // ==========================================
-// SCENE 3: INTERACTIVE SHOWCASE DENGAN EXTREME ZOOM & HOTSPOT ANOTASI 
+// SCENE 3: INTERACTIVE SHOWCASE DENGAN EXTREME ZOOM & HOTSPOT ANOTASI (MULTIPLE ARROWS)
 // ==========================================
 const showcaseContainer = document.getElementById('showcase-3d-container');
 const loadingShowcase = document.getElementById('loading-showcase');
-
-// Elemen HTML Anotasi Tanda Panah
-const annotOverlay = document.getElementById('annotation-overlay');
-const annotText = document.getElementById('annot-text');
-const annotDotGlow = document.getElementById('annot-dot-glow');
-const annotLine = document.getElementById('annot-line');
 
 if (showcaseContainer) {
     const shScene = new THREE.Scene();
@@ -403,7 +397,7 @@ if (showcaseContainer) {
     shControls.minDistance = 0.5;
     shControls.maxDistance = 5.0;
 
-    let activeAnnotation = null;
+    let activeAnnotationsArray = [];
 
     const shLoader = new GLTFLoader();
     shLoader.load('assets/img/ergosmart-chair.glb', (gltf) => {
@@ -431,60 +425,76 @@ if (showcaseContainer) {
         if (window.updateShowcaseCamera) window.updateShowcaseCamera('mekanikal', 0);
     });
 
-    // Peta Koordinat Kamera (EXTREME CLOSE-UP ZOOM)
+    // Peta Koordinat Kamera
     const cameraMap = {
-        'mekanikal_0': { pos: [0.8, 0.4, 0.8], target: [0.4, 0.2, 0.2] },      // Zoom Lengan (Armrest)
-        'mekanikal_1': { pos: [1.0, -0.4, 1.0], target: [0, -0.6, 0] },        // Zoom Rangka Bawah
-        'mekanikal_2': { pos: [0.6, -0.2, 1.0], target: [0, -0.3, 0] },        // Zoom Engsel/Hidrolik
-        'material_0':  { pos: [0, 0.8, 0.6], target: [0, 0.1, 0] },            // Zoom Permukaan Busa
-        'material_1':  { pos: [0.6, 0.6, -1.0], target: [0, 0.5, -0.1] },      // Zoom Kain Sandaran
-        'material_2':  { pos: [0.8, 0.3, -1.0], target: [0, 0.2, -0.1] },      // Zoom Lumbar Pinggang
-        'elektronik_0':{ pos: [-0.3, 0.4, 0.8], target: [0, 0.1, 0] },         // Zoom Dudukan Sensor FSR
-        'elektronik_1':{ pos: [-0.5, -0.3, 0.8], target: [0, -0.2, 0] },       // Zoom Kolong Kompartemen MUX
-        'elektronik_2':{ pos: [-0.4, -0.2, 0.9], target: [0, -0.2, 0] },       // Zoom Kompartemen ESP32
-        'elektronik_3':{ pos: [2.5, 1.2, 3.0], target: [0, 0, 0] },            // Mundur Global (Cloud)
-        'elektronik_4':{ pos: [2.5, 1.2, 3.0], target: [0, 0, 0] }             // Mundur Global (Mobile App)
+        'mekanikal_0': { pos: [0.8, 0.4, 0.8], target: [0.4, 0.2, 0.2] },      
+        'mekanikal_1': { pos: [1.0, -0.4, 1.0], target: [0, -0.6, 0] },        
+        // ZOOM OUT FLEKSIBEL (Slide Synchro Tilt & Gas Lift)
+        'mekanikal_2': { pos: [1.3, -0.1, 1.5], target: [0, -0.35, 0] },       
+        'material_0':  { pos: [0, 0.8, 0.6], target: [0, 0.1, 0] },            
+        'material_1':  { pos: [0.6, 0.6, -1.0], target: [0, 0.5, -0.1] },      
+        'material_2':  { pos: [0.8, 0.3, -1.0], target: [0, 0.2, -0.1] },      
+        'elektronik_0':{ pos: [-0.3, 0.4, 0.8], target: [0, 0.1, 0] },         
+        'elektronik_1':{ pos: [-0.5, -0.3, 0.8], target: [0, -0.2, 0] },       
+        'elektronik_2':{ pos: [-0.4, -0.2, 0.9], target: [0, -0.2, 0] },       
+        'elektronik_3':{ pos: [2.5, 1.2, 3.0], target: [0, 0, 0] },            
+        'elektronik_4':{ pos: [2.5, 1.2, 3.0], target: [0, 0, 0] }             
     };
 
-    // Peta Koordinat Titik HTML (Raycasting Point 3D ke Layar 2D CSS)
+    // Peta Titik HTML ARRAY (Memungkinkan lebih dari 1 panah dlm 1 slide)
     const annotationMap = {
-        'mekanikal_0': { point: [0.4, 0.2, 0.3], text: 'Armrest 4D', color: 'bg-ergo-blue', border: 'border-ergo-blue', line: 'from-ergo-blue' },
-        'mekanikal_1': { point: [0, -0.6, 0.2], text: 'Sasis Aluminium', color: 'bg-ergo-blue', border: 'border-ergo-blue', line: 'from-ergo-blue' },
-        'mekanikal_2': { point: [0, -0.4, 0.1], text: 'Gas Lift Hidrolik', color: 'bg-ergo-blue', border: 'border-ergo-blue', line: 'from-ergo-blue' },
-        'material_0':  { point: [0, -0.1, 0.2], text: 'Memory Foam 50D', color: 'bg-ergo-green', border: 'border-ergo-green', line: 'from-ergo-green' },
-        'material_1':  { point: [-0.1, 0.4, -0.2], text: 'Mesh 3D Breathable', color: 'bg-ergo-green', border: 'border-ergo-green', line: 'from-ergo-green' },
-        'material_2':  { point: [0, 0.1, -0.2], text: 'Lumbar Support', color: 'bg-ergo-green', border: 'border-ergo-green', line: 'from-ergo-green' },
-        'elektronik_0':{ point: [0, 0.05, 0], text: '16x FSR Sensor', color: 'bg-ergo-orange', border: 'border-ergo-orange', line: 'from-ergo-orange' },
-        'elektronik_1':{ point: [0, -0.25, 0.1], text: 'Multiplexer MUX', color: 'bg-ergo-orange', border: 'border-ergo-orange', line: 'from-ergo-orange' },
-        'elektronik_2':{ point: [0, -0.25, 0.1], text: 'ESP32 Wi-Fi', color: 'bg-ergo-orange', border: 'border-ergo-orange', line: 'from-ergo-orange' },
-        'elektronik_3': null, 
-        'elektronik_4': null  
+        'mekanikal_0': [ { point: [0.4, 0.2, 0.3], text: 'Armrest 4D', color: 'bg-ergo-blue', border: 'border-ergo-blue', line: 'from-ergo-blue' } ],
+        'mekanikal_1': [ { point: [0, -0.6, 0.2], text: 'Sasis Aluminium', color: 'bg-ergo-blue', border: 'border-ergo-blue', line: 'from-ergo-blue' } ],
+        
+        // Terdapat 2 Panah Terpisah untuk Slide 3 (Synchro Tilt & Gas Lift)
+        'mekanikal_2': [
+            { point: [0, -0.25, 0.0], text: 'Synchro Tilt Mech', color: 'bg-ergo-blue', border: 'border-ergo-blue', line: 'from-ergo-blue' },
+            { point: [0, -0.45, 0.1], text: 'Gas Lift Silinder', color: 'bg-ergo-blue', border: 'border-ergo-blue', line: 'from-ergo-blue' }
+        ],
+        
+        'material_0':  [ { point: [0, -0.1, 0.2], text: 'Memory Foam 50D', color: 'bg-ergo-green', border: 'border-ergo-green', line: 'from-ergo-green' } ],
+        'material_1':  [ { point: [-0.1, 0.4, -0.2], text: 'Mesh 3D Breathable', color: 'bg-ergo-green', border: 'border-ergo-green', line: 'from-ergo-green' } ],
+        'material_2':  [ { point: [0, 0.1, -0.2], text: 'Lumbar Support', color: 'bg-ergo-green', border: 'border-ergo-green', line: 'from-ergo-green' } ],
+        'elektronik_0':[ { point: [0, 0.05, 0], text: '16x FSR Sensor', color: 'bg-ergo-orange', border: 'border-ergo-orange', line: 'from-ergo-orange' } ],
+        'elektronik_1':[ { point: [0, -0.25, 0.1], text: 'Multiplexer MUX', color: 'bg-ergo-orange', border: 'border-ergo-orange', line: 'from-ergo-orange' } ],
+        'elektronik_2':[ { point: [0, -0.25, 0.1], text: 'ESP32 Wi-Fi', color: 'bg-ergo-orange', border: 'border-ergo-orange', line: 'from-ergo-orange' } ],
+        'elektronik_3': [], 
+        'elektronik_4': []  
     };
 
     window.updateShowcaseCamera = function(tabId, index) {
         const key = `${tabId}_${index}`;
         
-        // 1. Bergerak ke Target Posisi Lensa Zoom Kamera
+        // 1. Bergerak ke Target Posisi Lensa Kamera
         if (cameraMap[key]) {
             targetCamPos.set(...cameraMap[key].pos);
             targetLookAt.set(...cameraMap[key].target);
         }
 
-        // 2. Tampilkan dan Atur Tanda Panah & Teks Info HTML
-        if (annotationMap[key]) {
-            activeAnnotation = annotationMap[key];
-            annotText.innerText = activeAnnotation.text;
-            
-            // Ubah pewarnaan tema berdasarkan tab yang diklik
-            annotText.className = `absolute left-10 md:left-16 bg-slate-900/90 backdrop-blur border text-white text-[10px] md:text-xs font-bold px-3 py-1.5 rounded-lg shadow-[0_0_20px_rgba(0,0,0,0.8)] whitespace-nowrap ${activeAnnotation.border}`;
-            annotDotGlow.className = `w-4 h-4 rounded-full opacity-50 animate-ping absolute -left-2 ${activeAnnotation.color}`;
-            annotLine.className = `w-10 md:w-16 h-[2px] bg-gradient-to-r ml-1 to-transparent ${activeAnnotation.line}`;
-            
-            annotOverlay.style.opacity = '1';
-        } else {
-            activeAnnotation = null;
-            annotOverlay.style.opacity = '0';
+        // 2. Sembunyikan Semua Overlay Terlebih Dahulu
+        for(let i=0; i<2; i++) {
+            const ol = document.getElementById(`annot-overlay-${i}`);
+            if(ol) ol.style.opacity = '0';
         }
+
+        // 3. Tampilkan dan Atur Tanda Panah & Teks Berdasarkan Array
+        activeAnnotationsArray = annotationMap[key] || [];
+        
+        activeAnnotationsArray.forEach((annot, i) => {
+            const overlay = document.getElementById(`annot-overlay-${i}`);
+            if(!overlay) return;
+
+            const annotText = overlay.querySelector('.annot-text');
+            const annotDotGlow = overlay.querySelector('.annot-dot-glow');
+            const annotLine = overlay.querySelector('.annot-line');
+
+            annotText.innerText = annot.text;
+            annotText.className = `annot-text absolute left-10 md:left-16 bg-slate-900/90 backdrop-blur border text-white text-[10px] md:text-xs font-bold px-3 py-1.5 rounded-lg shadow-[0_0_20px_rgba(0,0,0,0.8)] whitespace-nowrap ${annot.border}`;
+            annotDotGlow.className = `annot-dot-glow w-4 h-4 rounded-full opacity-50 animate-ping absolute -left-2 ${annot.color}`;
+            annotLine.className = `annot-line w-10 md:w-16 h-[2px] bg-gradient-to-r ml-1 to-transparent ${annot.line}`;
+            
+            overlay.style.opacity = '1';
+        });
     };
 
     function animateShowcase() {
@@ -494,23 +504,24 @@ if (showcaseContainer) {
         shCamera.position.lerp(targetCamPos, 0.04);
         shControls.target.lerp(targetLookAt, 0.04);
         
-        // Proses Memproyeksikan Koordinat Titik 3D ke Layar HTML (Panah Melayang)
-        if (activeAnnotation && annotOverlay) {
-            const point3D = new THREE.Vector3(...activeAnnotation.point);
-            
-            // Terapkan penyesuaian rotasi (Math.PI / 6) dan posisi (y=-0.2) agar sesuai objek
-            point3D.applyAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI / 6); 
-            point3D.y -= 0.2; 
-            
-            // Tembakkan titik tersebut mengikuti sorotan kamera saat diputar pengguna
-            point3D.project(shCamera);
-            
-            // Mengubah posisi left dan top pada elemen div CSS
-            const x = (point3D.x * 0.5 + 0.5) * showcaseContainer.clientWidth;
-            const y = (point3D.y * -0.5 + 0.5) * showcaseContainer.clientHeight;
-            
-            annotOverlay.style.left = `${x}px`;
-            annotOverlay.style.top = `${y}px`;
+        // Proses Memproyeksikan Koordinat Titik 3D ke Layar HTML (Panah Melayang MULTIPLE)
+        if (activeAnnotationsArray.length > 0) {
+            activeAnnotationsArray.forEach((annot, i) => {
+                const overlay = document.getElementById(`annot-overlay-${i}`);
+                if (!overlay) return;
+
+                const point3D = new THREE.Vector3(...annot.point);
+                point3D.applyAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI / 6); 
+                point3D.y -= 0.2; 
+                
+                point3D.project(shCamera);
+                
+                const x = (point3D.x * 0.5 + 0.5) * showcaseContainer.clientWidth;
+                const y = (point3D.y * -0.5 + 0.5) * showcaseContainer.clientHeight;
+                
+                overlay.style.left = `${x}px`;
+                overlay.style.top = `${y}px`;
+            });
         }
 
         shControls.update();
